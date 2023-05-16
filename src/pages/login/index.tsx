@@ -1,7 +1,7 @@
 import styles from '../../styles/Login.module.css'
 import Router from 'next/router';
 export default function login(){
-    const login = () => {
+    /*const login = () => {
             const name = document.getElementById('takename') as HTMLInputElement; 
             const pass = document.getElementById('takepass') as HTMLInputElement;
             const item = window.localStorage.getItem(name.value);
@@ -68,6 +68,16 @@ export default function login(){
     </div>
         </div>
         </>
+    )*/
+    return (
+        <>
+        <div className="login">
+            <form action="">
+                <input type="text"  id="username" placeholder="username" />
+                <input type="password"  id="password" placeholder="password" />
+                <button>Login</button>
+            </form>
+        </div>
+        </>
     )
-    
 }

@@ -2,8 +2,7 @@ import Router from 'next/router';
 import styles from '../../styles/Register.module.css';
 
 export default function register(){
-    
-
+    /*
     const register = () => {
         let error = 0;
         const name = document.getElementById('takename') as HTMLInputElement;
@@ -126,6 +125,20 @@ export default function register(){
         </div>
         <hr />
     </div>
+        </>
+    )*/
+    return(
+        <>
+        <div className="signup">
+            <form action="">
+                <input type="text" placeholder='Username' id='username' />
+                <input type="email" placeholder='Email' id='email' />
+                <input type="password" placeholder='Password' id='password' />
+                <input type="password" placeholder='Confirm your password' id='cpassword' />
+                <input type="text" placeholder='Bio' id='bio' />
+                <button>Register</button>
+            </form>
+        </div>
         </>
     )
 }
