@@ -1,143 +1,121 @@
+import styles from '../../styles/Login.module.css'
 import Router from 'next/router';
-import styles from '../../styles/Register.module.css';
+import {useForm} from 'react-hook-form';
+import {DevTool} from '@hookform/devtools';
+import {yupResolver} from "@hookform/resolvers/yup"
+import * as yup from "yup";
+
+const schema = yup.object({
+    email: yup.
+            string().
+            email("Incorrect Format").
+            required("Email is mandatory"),
+    password: yup.
+                string().
+                required("Password is mandatory"),
+    name: yup.
+            string().
+            required("Name is mandatory"),
+    bio: yup.
+            string().
+            required("Bio is maybe mandatory")
+})
+
+type Register = {
+    email:string
+    password:string
+    name:string
+    bio:string
+}
 
 export default function register(){
-    /*
-    const register = () => {
-        let error = 0;
-        const name = document.getElementById('takename') as HTMLInputElement;
-        if(!name.value){
-            alert("The username is empty")
-            error++;
+
+    const form = useForm<Register>({
+        resolver: yupResolver(schema)
+    });
+    const { register, control, handleSubmit, formState } = form; 
+    const {errors} = formState ;
+
+    const onSubmit = async (data: Register) => { 
+        let cpass = document.getElementById("cpassword") as HTMLInputElement;
+        let value = cpass.value;
+        if(value == data.password ){
+        const request = await fetch('http://localhost:8080/users',{
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers:{
+                'Content-Type': 'application/json'
+            }
+        })
+        const response = await request.json();
+        console.log(response);
+        if(response.status == false){
+            alert(response.message)
         }
-        const email = document.getElementById('takeemail') as HTMLInputElement;
-        if(!email.value){
-            alert("The email is empty")
-            error++;
+        else{
+            Router.push('/channel')
         }
-        const pass = document.getElementById('takepassword') as HTMLInputElement;
-        if(!pass.value){
-            alert("The password is empty")
-            error++
-        }
-        const cpass = document.getElementById('takecpass') as HTMLInputElement;
-        if(!cpass.value){
-            alert("Password doesn't match")
-            error++
-        }
-        const bio = document.getElementById('takebio') as HTMLInputElement;
-        if(!bio.value){
-            alert("The bio is empty")
-            error++
-        }
-        if(error == 0 ){
-        localStorage.setItem(name.value,name.value);
-        localStorage.setItem(email.value,email.value);
-        localStorage.setItem(pass.value,pass.value);
-        localStorage.setItem(bio.value,bio.value);
-        Router.push('/main');
     }
-    else {
-        //Do nothing
+    else 
+        alert("Password don't match");
     }
-}
-    return (
-        <>
-    <div className={styles.part2}>
-        <div className={styles.login}>
-            <div className={styles.titling}>
-            <h1 className={styles.title}>CHAT - APP</h1>
-            </div>
-            <hr className={styles.ligne}/>
 
 
-            <label 
-                htmlFor="username" 
-                className={styles.labeling}>Name :</label>
-                <br />
-        <input 
-            type="text" 
-            className={styles.inputing} 
-            id="takename"
-            name="username"
-            placeholder="Put your name here..."/>
-            <br />
-            
-
-            
-            <label 
-                htmlFor="email" 
-                className={styles.labeling}>Email :</label>
-                <br />
-        <input 
-            type='email'
-            className={styles.inputing} 
-            name="email"
-            id="takeemail"
-            placeholder="Put your email here..." /> 
-            <br />
-
-
-
-            <label 
-                htmlFor="password" 
-                className={styles.labeling}>Password :</label>
-                <br />
-        <input 
-            type='password' 
-            className={styles.inputing} 
-            name="password"
-            id="takepassword"
-            placeholder="Put your password here..."/>
-            <br />
-
-
-
-            <label 
-                htmlFor="cpass" 
-                className={styles.labeling}>Confirm password :</label>
-                <br />
-        <input 
-            type='password'
-            className={styles.inputing} 
-            name="cpass"
-            id="takecpass"
-            placeholder="Confirm your password here..."/>
-            <br />
-
-
-            <label 
-                htmlFor="bio" 
-                className={styles.labeling}>Bio :</label>
-                <br />
-        <input 
-            type="text" 
-            className={styles.inputing} 
-            name="bio"
-            id="takebio"
-            placeholder="Put your bio here..."/>
-            <br />
-        <div className={styles.contain}>
-            <button type='button' 
-            className={styles.tolog}
-            onClick={register}>Register</button>
-        </div>
-        </div>
-        <hr />
-    </div>
-        </>
-    )*/
     return(
         <>
-        <div className="signup">
-            <form action="">
-                <input type="text" placeholder='Username' id='username' />
-                <input type="email" placeholder='Email' id='email' />
-                <input type="password" placeholder='Password' id='password' />
-                <input type="password" placeholder='Confirm your password' id='cpassword' />
-                <input type="text" placeholder='Bio' id='bio' />
+        <div className={styles.signup}>
+            <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <input 
+                type="email"  
+                id="email"
+                placeholder='Email' 
+                {...register("email",
+                {required:{
+                    value: true,
+                    message: "Email is mandatory"
+                }})}/> 
+            <p>{errors.email?.message}</p> <br />
+
+            <input 
+                type="password"  
+                id="password" 
+                placeholder='Password'
+                {...register("password",{required:{
+                    value: true,
+                    message: "Password is mandatory"
+                }})} /> 
+            <p>{errors.password?.message}</p> <br />
+
+            <input 
+                type="password" 
+                placeholder='Confirm your password' 
+                id='cpassword' /> <br />
+
+                <input 
+                    type="text" 
+                    id='name' 
+                    placeholder='Name'
+                    {...register("name",{
+                        required:{
+                            value:true,
+                            message: "Name is mandatory"
+                        }})}/> <br />
+            <p>{errors.name?.message}</p> <br />
+
+            <input 
+                type="text"
+                id='bio'
+                placeholder='Bio'
+                {...register("bio",{
+                    required:{
+                        value:true,
+                        message:"Bio is mandatory"
+                    }})} /> <br />
+            <p>{errors.bio?.message}</p> <br />
+
                 <button>Register</button>
             </form>
+            <DevTool control={control} />
         </div>
         </>
     )
