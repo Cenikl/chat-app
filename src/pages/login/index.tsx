@@ -4,6 +4,7 @@ import {useForm} from 'react-hook-form';
 import {DevTool} from '@hookform/devtools';
 import {yupResolver} from "@hookform/resolvers/yup"
 import * as yup from "yup";
+import Cookies from 'universal-cookie';
 
 const schema = yup.object({
     email: yup.string().email("Incorrect Format").required("Email is mandatory"),
@@ -40,7 +41,10 @@ export default function login(){
             alert(response.message)
         }
         else if(response.status == true){
-            Router.push('/channel')
+                const cookies = new Cookies();
+                cookies.set('jwttoken',response.user.token,{expires: new Date('2023-12-31')});
+                console.log(cookies.get('jwttoken'))
+            Router.push('/main')
         }
     }
 

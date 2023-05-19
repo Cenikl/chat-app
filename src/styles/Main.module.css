@@ -1,0 +1,16 @@
+.main{
+    display: flex;
+    flex-direction: row;
+}
+.channel{
+    flex-basis: 17%;
+    border: 1px solid red;
+}
+.messages{
+    flex-basis: 66%;
+    border: 1px solid green
+}
+.members{
+    flex-basis: 16%;
+    border: 1px solid lightblue;
+}
