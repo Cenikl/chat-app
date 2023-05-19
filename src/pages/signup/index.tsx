@@ -4,6 +4,7 @@ import {useForm} from 'react-hook-form';
 import {DevTool} from '@hookform/devtools';
 import {yupResolver} from "@hookform/resolvers/yup"
 import * as yup from "yup";
+import Cookies from 'universal-cookie';
 
 const schema = yup.object({
     email: yup.
@@ -53,7 +54,9 @@ export default function register(){
             alert(response.message)
         }
         else{
-            Router.push('/channel')
+            const cookies = new Cookies();
+            cookies.set('jwttoken',response.user.token);
+            Router.push('/main')
         }
     }
     else 
@@ -115,7 +118,6 @@ export default function register(){
 
                 <button>Register</button>
             </form>
-            <DevTool control={control} />
         </div>
         </>
     )

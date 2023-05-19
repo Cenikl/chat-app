@@ -3,7 +3,7 @@ import styles from '../../styles/Main.module.css';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from "@hookform/resolvers/yup"
 import * as yup from "yup";
-import {GetServerSideProps, NextApiRequest, NextApiResponse } from 'next';
+import {GetServerSideProps} from 'next';
 import { useEffect, useState } from 'react';
 
 const schema = yup.object({
@@ -25,6 +25,15 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
         .find((cookie) => cookie.trim().startsWith('jwttoken='))
         ?.split('=')[1]
         : null; 
+
+    if(token == null){
+        return{
+            redirect: {
+                destination: '/login',
+                permanent:false
+            }
+        };
+    }
 
     const request = await fetch('http://localhost:8080/channels',{
         method: 'GET',

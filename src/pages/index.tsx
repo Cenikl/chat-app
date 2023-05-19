@@ -2,8 +2,29 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
+import {GetServerSideProps} from 'next';
 
 const inter = Inter({ subsets: ['latin'] })
+
+export const getServerSideProps: GetServerSideProps = async (context) =>{
+  const {req} = context;
+  const cookieHeader = req.headers.cookie;
+  const token = cookieHeader ? cookieHeader?.split('; ')
+      .find((cookie) => cookie.trim().startsWith('jwttoken='))
+      ?.split('=')[1]
+      : null; 
+  if(token == null){
+      return{
+          redirect: {
+              destination: '/login',
+              permanent:false
+          }
+      };
+  }
+  return {
+    props:{}
+  }
+}
 
 export default function Home() {
   return (

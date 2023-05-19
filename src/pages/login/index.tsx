@@ -41,8 +41,7 @@ export default function login(){
         }
         else if(response.status == true){
                 const cookies = new Cookies();
-                cookies.set('jwttoken',response.user.token,{expires: new Date('2023-12-31')});
-                console.log(cookies.get('jwttoken'))
+                cookies.set('jwttoken',response.user.token);
             Router.push('/main')
         }
     }
