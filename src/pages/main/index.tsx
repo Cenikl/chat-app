@@ -2,7 +2,7 @@ import Cookies from 'universal-cookie';
 import styles from '../../styles/Main.module.css';
 import axios from 'axios';
 import {GetServerSideProps, NextApiRequest, NextApiResponse } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Message = {
     id: number,
@@ -27,8 +27,6 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
         ?.split('=')[1]
         : null; 
 
-    console.log(token)
-
     const request = await fetch('http://localhost:8080/channels',{
         method: 'GET',
         headers:{
@@ -45,8 +43,11 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
 }
 
 export default function menu({channels}:any){
-    const [messages,setMessages] = useState<Message[]>([]);
+    const [messages,setMessages] = useState([]);
+    const [shouldFetchData,setShouldFetchData] = useState(false);
     const cookies = new Cookies();
+    const [currentChannel,setCurrentChannel] = useState(0);
+
     const focusChat = async (id:any) => {
         const request = await fetch('http://localhost:8080/messages/channel/'+id,{
             headers:{
@@ -55,10 +56,36 @@ export default function menu({channels}:any){
             }
         })
         const response = await request.json();
-        setMessages(response.messages)
-        messages?.sort((a,b) => b.id - a.id)
-        return "hello world" 
+        setMessages(response.messages.sort((a:any,b:any) => a.id - b.id))
+        setCurrentChannel((currentChannel) => id)
+        setShouldFetchData(true)
     }
+
+    const sendMessage = async () => {
+        let inpMess = document.getElementById('messaging') as HTMLInputElement;
+        let value = inpMess.value
+        let sending = {
+            channelId:currentChannel,
+            recipientId:null,
+            content:value
+        } 
+        const request = await fetch('http://localhost:8080/message',{
+            method:'POST',
+            body: JSON.stringify(sending),
+            headers:{
+                'Authorization' : 'Bearer '+cookies.get('jwttoken'),
+                'Content-Type': 'application/json'
+            }
+        })
+        focusChat(currentChannel)
+    }
+    useEffect(()=>{
+        if(shouldFetchData){
+            const timer = setInterval(()=>{focusChat(currentChannel);console.log(currentChannel)},1000)
+            return () => {
+                clearTimeout(timer)
+            }
+    }},[currentChannel])
     return (
         <>
         <div className={styles.main}>
@@ -79,6 +106,10 @@ export default function menu({channels}:any){
                     </div>
                 )
             })}
+            <input type="text" 
+                id="messaging" 
+                placeholder="Enter your text here..." />
+            <button onClick={()=>sendMessage()}>Send</button>
             </div>
             <div className={styles.members}>
 
