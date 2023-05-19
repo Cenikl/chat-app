@@ -1,22 +1,21 @@
 import Cookies from 'universal-cookie';
 import styles from '../../styles/Main.module.css';
-import axios from 'axios';
+import {useForm} from 'react-hook-form';
+import {yupResolver} from "@hookform/resolvers/yup"
+import * as yup from "yup";
 import {GetServerSideProps, NextApiRequest, NextApiResponse } from 'next';
 import { useEffect, useState } from 'react';
 
-type Message = {
-    id: number,
-    content: string,
-    createdAt: string,
-    updatedAt: string,
-    senderId: number,
-    recipientId: null,
-    channelId: number,
-    sender: {
-        id: number,
-        name: string,
-        email: string
-    }
+const schema = yup.object({
+    name: yup.string().required("Put the name of the channel"),
+    type: yup.string().required("Type is mandatory"),
+    members: yup.string().notRequired()
+})
+
+type Channel = {
+    name:string,
+    type:string,
+    members:string
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
@@ -43,10 +42,38 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
 }
 
 export default function menu({channels}:any){
+    const [newChannel,setNewChannel] = useState(channels);
     const [messages,setMessages] = useState([]);
     const [shouldFetchData,setShouldFetchData] = useState(false);
     const cookies = new Cookies();
     const [currentChannel,setCurrentChannel] = useState(0);
+    const [isOpen,setIsOpen] = useState(false);
+    const form = useForm<Channel>({
+        resolver:yupResolver(schema)
+    })
+    const { register, handleSubmit, formState } = form; 
+    const {errors} = formState ;
+
+    const onSubmit = async (data:Channel) =>{
+        const request = await fetch('http://localhost:8080/channel',{
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers:{
+                'Authorization' : 'Bearer '+cookies.get('jwttoken'),
+                'Content-Type': 'application/json'
+            }
+        }) 
+        const request2 = await fetch('http://localhost:8080/channels',{
+        method: 'GET',
+        headers:{
+            'Authorization' : 'Bearer '+cookies.get('jwttoken'),
+            'Content-Type': 'application/json'
+        }
+    })
+    const response = await request2.json()
+    setNewChannel(response.channels)
+
+    }
 
     const focusChat = async (id:any) => {
         const request = await fetch('http://localhost:8080/messages/channel/'+id,{
@@ -90,13 +117,14 @@ export default function menu({channels}:any){
         <>
         <div className={styles.main}>
             <div className={styles.channel}>
-            {channels.map((channel:any) => {
+            {newChannel.map((channel:any) => {
                 return(
                     <div key={channel.id}>
                         <button onClick={() => focusChat(channel.id)}>{channel.name}</button>
                     </div>
                 )
             })}
+            <button onClick={()=>{setIsOpen(!isOpen)}}> Create a channel</button>
             </div>
             <div className={styles.messages}>
             {messages.map((message:any) => {
@@ -106,15 +134,56 @@ export default function menu({channels}:any){
                     </div>
                 )
             })}
+            {currentChannel > 0 && 
+            <>
             <input type="text" 
                 id="messaging" 
                 placeholder="Enter your text here..." />
             <button onClick={()=>sendMessage()}>Send</button>
+            </>}
             </div>
             <div className={styles.members}>
 
             </div>
         </div>
+
+
+        {isOpen && 
+            <div>
+                <form onSubmit={handleSubmit(onSubmit)} noValidate>
+                <input 
+                    type="text"  
+                    id="name" 
+                    placeholder='Name'
+                    {...register("name",
+                    {required:{
+                        value: true,
+                        message: "Put the name of the channel"
+                    }})}/> 
+                <p>{errors.name?.message}</p>
+                    <br />
+
+                <input 
+                    type="text"  
+                    id="type" 
+                    placeholder='Type of the channel'
+                    {...register("type",{required:{
+                        value: true,
+                        message: "Type is mandatory"
+                    }})} /> 
+                <p>{errors.type?.message}</p>    
+                    <br />
+                
+                <input 
+                    type="text"  
+                    id="members" 
+                    placeholder='Members (actually not working, dont put anything here yet)'
+                    {...register("members")}/> 
+                    <br />
+
+                <button >Create</button>
+            </form>
+            </div>}
         </>
     )
 }

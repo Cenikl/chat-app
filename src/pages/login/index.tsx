@@ -1,7 +1,6 @@
 import styles from '../../styles/Login.module.css'
 import Router from 'next/router';
 import {useForm} from 'react-hook-form';
-import {DevTool} from '@hookform/devtools';
 import {yupResolver} from "@hookform/resolvers/yup"
 import * as yup from "yup";
 import Cookies from 'universal-cookie';
@@ -76,7 +75,6 @@ export default function login(){
                     <br />
                 <button >Login</button>
             </form>
-            <DevTool control={control} />
         </div>
         </>
     )
