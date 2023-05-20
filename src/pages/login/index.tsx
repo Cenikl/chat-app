@@ -2,25 +2,15 @@ import styles from '../../styles/Login.module.css'
 import Router from 'next/router';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from "@hookform/resolvers/yup"
-import * as yup from "yup";
+import {Login}  from "../../components/login/type"
+import {schema}  from "../../components/login/verify"
 import Cookies from 'universal-cookie';
-
-const schema = yup.object({
-    email: yup.string().email("Incorrect Format").required("Email is mandatory"),
-    password: yup.string().required("Password is mandatory")
-
-})
-
-type Login = {
-    email:string
-    password:string
-}
 
 export default function login(){
     const form = useForm<Login>({
         resolver: yupResolver(schema)
     });
-    const { register, control, handleSubmit, formState } = form; 
+    const { register, handleSubmit, formState } = form; 
     const {errors} = formState ;
 
     const onSubmit = async (data: Login) => { 
@@ -49,10 +39,11 @@ export default function login(){
     return (
         <>
         <div className={styles.login}>
+            <h1 className={styles.title}>Sign-In</h1> <hr />
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
                 <input 
                     type="email"  
-                    id="email" 
+                    id={styles.form} 
                     placeholder='Email'
                     {...register("email",
                     {required:{
@@ -64,7 +55,7 @@ export default function login(){
 
                 <input 
                     type="password"  
-                    id="password" 
+                    id={styles.form}  
                     placeholder='Password'
                     {...register("password",{required:{
                         value: true,
@@ -72,7 +63,7 @@ export default function login(){
                     }})} /> 
                 <p>{errors.password?.message}</p>    
                     <br />
-                <button >Login</button>
+                <button className={styles.log}>Login</button>
             </form>
         </div>
         </>

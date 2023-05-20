@@ -1,40 +1,17 @@
-import styles from '../../styles/Login.module.css'
+import styles from '../../styles/Register.module.css'
 import Router from 'next/router';
 import {useForm} from 'react-hook-form';
-import {DevTool} from '@hookform/devtools';
 import {yupResolver} from "@hookform/resolvers/yup"
-import * as yup from "yup";
 import Cookies from 'universal-cookie';
-
-const schema = yup.object({
-    email: yup.
-            string().
-            email("Incorrect Format").
-            required("Email is mandatory"),
-    password: yup.
-                string().
-                required("Password is mandatory"),
-    name: yup.
-            string().
-            required("Name is mandatory"),
-    bio: yup.
-            string().
-            required("Bio is maybe mandatory")
-})
-
-type Register = {
-    email:string
-    password:string
-    name:string
-    bio:string
-}
+import {Register}  from "../../components/signup/type"
+import {schema}  from "../../components/signup/verify"
 
 export default function register(){
 
     const form = useForm<Register>({
         resolver: yupResolver(schema)
     });
-    const { register, control, handleSubmit, formState } = form; 
+    const { register,handleSubmit, formState } = form; 
     const {errors} = formState ;
 
     const onSubmit = async (data: Register) => { 
@@ -49,7 +26,6 @@ export default function register(){
             }
         })
         const response = await request.json();
-        console.log(response);
         if(response.status == false){
             alert(response.message)
         }
@@ -67,10 +43,11 @@ export default function register(){
     return(
         <>
         <div className={styles.signup}>
+        <h1 className={styles.title}>Sign-Up</h1> <hr />
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
             <input 
                 type="email"  
-                id="email"
+                id={styles.form}
                 placeholder='Email' 
                 {...register("email",
                 {required:{
@@ -81,7 +58,7 @@ export default function register(){
 
             <input 
                 type="password"  
-                id="password" 
+                id={styles.form} 
                 placeholder='Password'
                 {...register("password",{required:{
                     value: true,
@@ -92,11 +69,12 @@ export default function register(){
             <input 
                 type="password" 
                 placeholder='Confirm your password' 
+                className={styles.cpass}
                 id='cpassword' /> <br />
 
                 <input 
                     type="text" 
-                    id='name' 
+                    id={styles.form} 
                     placeholder='Name'
                     {...register("name",{
                         required:{
@@ -107,7 +85,7 @@ export default function register(){
 
             <input 
                 type="text"
-                id='bio'
+                id={styles.form}
                 placeholder='Bio'
                 {...register("bio",{
                     required:{
@@ -116,7 +94,7 @@ export default function register(){
                     }})} /> <br />
             <p>{errors.bio?.message}</p> <br />
 
-                <button>Register</button>
+                <button className={styles.log}>Register</button>
             </form>
         </div>
         </>
