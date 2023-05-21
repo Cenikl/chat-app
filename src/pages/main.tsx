@@ -2,21 +2,10 @@ import Cookies from 'universal-cookie';
 import styles from '../../styles/Main.module.css';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from "@hookform/resolvers/yup"
-import * as yup from "yup";
 import {GetServerSideProps} from 'next';
+import {schema} from "../utils/mainVerify";
+import {Channel}  from "../typings/channelType";
 import { useEffect, useState } from 'react';
-
-const schema = yup.object({
-    name: yup.string().required("Put the name of the channel"),
-    type: yup.string().required("Type is mandatory"),
-    members: yup.string().notRequired()
-})
-
-type Channel = {
-    name:string,
-    type:string,
-    members:string
-}
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const {req} = context;
@@ -34,7 +23,6 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
             }
         };
     }
-
     const request = await fetch('http://localhost:8080/channels',{
         method: 'GET',
         headers:{
@@ -125,15 +113,16 @@ export default function menu({channels}:any){
     return (
         <>
         <div className={styles.main}>
-            <div className={styles.channel}>
+            <div className={styles.channels}>
+                <h1>Channel List</h1>
             {newChannel.map((channel:any) => {
                 return(
                     <div key={channel.id}>
-                        <button onClick={() => focusChat(channel.id)}>{channel.name}</button>
+                        <button className={styles.channel} onClick={() => focusChat(channel.id)}>{channel.name}</button>
                     </div>
                 )
             })}
-            <button onClick={()=>{setIsOpen(!isOpen)}}> Create a channel</button>
+            <button className={styles.cChannel} onClick={()=>{setIsOpen(!isOpen)}}> Create a channel</button>
             </div>
             <div className={styles.messages}>
             {messages.map((message:any) => {
@@ -145,10 +134,12 @@ export default function menu({channels}:any){
             })}
             {currentChannel > 0 && 
             <>
+            <div>
             <input type="text" 
                 id="messaging" 
                 placeholder="Enter your text here..." />
             <button onClick={()=>sendMessage()}>Send</button>
+            </div>
             </>}
             </div>
             <div className={styles.members}>

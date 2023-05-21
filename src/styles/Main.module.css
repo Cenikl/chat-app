@@ -1,14 +1,47 @@
 .main{
     display: flex;
     flex-direction: row;
+    background-color: rgba(255, 255, 255, 0.815);
+    padding-bottom: 100%;
+    border-right: 1px dotted rgba(80, 80, 80, 0.574) ;
+}
+.channels{
+    flex-basis: 17%;
+    color: rgb(213, 28, 28);
+    text-align: center;
 }
 .channel{
-    flex-basis: 17%;
-    border: 1px solid red;
+    border: 0;
+    border-bottom: 1px dotted rgba(80, 80, 80, 0.574);
+    background-color: rgba(255, 255, 255, 0.815);
+    color: rgba(0, 0, 0, 0.637);
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    padding: 8px;
+}
+.channel:hover{
+    background-color: rgba(0, 0, 0, 0.476);
+    color: white;
+}
+.cChannel{
+    border: 0;
+    border-bottom: 1px dotted rgba(80, 80, 80, 0.574);
+    background-color: rgba(255, 255, 255, 0.815);
+    color: rgba(0, 0, 0, 0.637);
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    padding: 8px;
+}
+.cChannel:hover{
+    background-color: rgba(0, 0, 0, 0.476);
+    color: white;
 }
 .messages{
     flex-basis: 66%;
-    border: 1px solid green
+    border: 1px solid green;
+    color: black;
 }
 .members{
     flex-basis: 16%;

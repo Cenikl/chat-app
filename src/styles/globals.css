@@ -93,7 +93,7 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));*/
-    background-color: rgb(190, 190, 190);
+    background-color: black;
 }
 
 a {

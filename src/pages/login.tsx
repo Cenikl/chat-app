@@ -2,8 +2,8 @@ import styles from '../../styles/Login.module.css'
 import Router from 'next/router';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from "@hookform/resolvers/yup"
-import {Login}  from "../../components/login/type"
-import {schema}  from "../../components/login/verify"
+import {Login}  from "../typings/loginType";
+import {schema}  from "../utils/loginVerify"
 import Cookies from 'universal-cookie';
 
 export default function login(){
@@ -12,6 +12,10 @@ export default function login(){
     });
     const { register, handleSubmit, formState } = form; 
     const {errors} = formState ;
+
+    const signUp = () => {
+        Router.push('/sign-up');
+    }
 
     const onSubmit = async (data: Login) => { 
         const request = await fetch('http://localhost:8080/users/login',{
@@ -24,7 +28,7 @@ export default function login(){
         const response = await request.json();
         if(response.status == false && response.statusCode == 404){
             alert(response.message)
-            Router.push('/signup')
+            Router.push('/sign-up')
         }
         else if(response.status == false && response.statusCode == 401){
             alert(response.message)
@@ -65,6 +69,9 @@ export default function login(){
                     <br />
                 <button className={styles.log}>Login</button>
             </form>
+            <button 
+                className={styles.log} 
+                onClick={signUp}>Sign-up</button>
         </div>
         </>
     )

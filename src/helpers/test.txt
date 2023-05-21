@@ -1,0 +1,5 @@
+ato no mipetraka 
+post 
+get
+put 
+delete

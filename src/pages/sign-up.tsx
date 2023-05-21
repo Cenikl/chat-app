@@ -3,8 +3,8 @@ import Router from 'next/router';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from "@hookform/resolvers/yup"
 import Cookies from 'universal-cookie';
-import {Register}  from "../../components/signup/type"
-import {schema}  from "../../components/signup/verify"
+import {Register}  from "../typings/signupType"
+import {schema}  from "../utils/signupVerify"
 
 export default function register(){
 
