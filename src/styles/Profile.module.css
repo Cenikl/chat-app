@@ -1,0 +1,12 @@
+.main{
+    display:flex;
+    height: 100%;
+    flex-direction: row;
+    border: 1px solid red;
+}
+.profile{
+    flex-basis: 60%;
+}
+.routing{
+    flex-basis:40%
+}

@@ -3,8 +3,8 @@ import styles from '../../styles/Main.module.css';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from "@hookform/resolvers/yup"
 import {GetServerSideProps} from 'next';
-import {schema} from "../utils/mainVerify";
-import {Channel}  from "../typings/channelType";
+/*import {schema} from "../../utils/mainVerify";
+import {Channel}  from "../../typings/channelType";*/
 import { useEffect, useState } from 'react';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
@@ -38,13 +38,12 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
     }
 }
 
-export default function menu({channels}:any){
+export default function messagesList({channels}:any){
     const [newChannel,setNewChannel] = useState(channels);
     const [messages,setMessages] = useState([]);
     const [shouldFetchData,setShouldFetchData] = useState(false);
     const cookies = new Cookies();
     const [currentChannel,setCurrentChannel] = useState(0);
-    const [isOpen,setIsOpen] = useState(false);
     const form = useForm<Channel>({
         resolver:yupResolver(schema)
     })
@@ -122,7 +121,6 @@ export default function menu({channels}:any){
                     </div>
                 )
             })}
-            <button className={styles.cChannel} onClick={()=>{setIsOpen(!isOpen)}}> Create a channel</button>
             </div>
             <div className={styles.messages}>
             {messages.map((message:any) => {
@@ -146,44 +144,6 @@ export default function menu({channels}:any){
 
             </div>
         </div>
-
-
-        {isOpen && 
-            <div>
-                <form onSubmit={handleSubmit(onSubmit)} noValidate>
-                <input 
-                    type="text"  
-                    id="name" 
-                    placeholder='Name'
-                    {...register("name",
-                    {required:{
-                        value: true,
-                        message: "Put the name of the channel"
-                    }})}/> 
-                <p>{errors.name?.message}</p>
-                    <br />
-
-                <input 
-                    type="text"  
-                    id="type" 
-                    placeholder='Type of the channel'
-                    {...register("type",{required:{
-                        value: true,
-                        message: "Type is mandatory"
-                    }})} /> 
-                <p>{errors.type?.message}</p>    
-                    <br />
-                
-                <input 
-                    type="text"  
-                    id="members" 
-                    placeholder='Members (actually not working, dont put anything here yet)'
-                    {...register("members")}/> 
-                    <br />
-
-                <button >Create</button>
-            </form>
-            </div>}
         </>
     )
 }

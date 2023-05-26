@@ -1,0 +1,15 @@
+.main{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border: 1px solid red;
+}
+.messages{
+    flex-basis: 77%;
+    border: 1px solid green;
+}
+.members{
+    flex-basis: 23%;
+}

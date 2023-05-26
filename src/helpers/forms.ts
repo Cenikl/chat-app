@@ -4,5 +4,7 @@ import {Login}  from "../typings/loginType";
 import { Type } from 'typescript';
 
 export const handleformLogin = (yupSchema:any) => {
-    return useForm<Login>({resolver: yupResolver(yupSchema)});
+    return useForm<Login>({
+        resolver: yupResolver(yupSchema)
+    });
 }

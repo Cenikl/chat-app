@@ -1,4 +1,4 @@
-import styles from '../../styles/Register.module.css'
+import styles from '../styles/Register.module.css'
 import Router from 'next/router';
 import {useForm} from 'react-hook-form';
 import {yupResolver} from "@hookform/resolvers/yup"
@@ -32,7 +32,7 @@ export default function register(){
         else{
             const cookies = new Cookies();
             cookies.set('jwttoken',response.user.token);
-            Router.push('/main')
+            Router.push('/profile')
         }
     }
     else 
