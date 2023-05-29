@@ -4,10 +4,13 @@ export const schema = yup.object({
     name: yup.
             string().
             required("Name is mandatory"),
-    oldPassword: yup.
+    currentPassword: yup.
                     string().
                     required("Password is mandatory"),
-    password:yup.
+    newPassword:yup.
+                string().
+                required("Password is mandatory"),
+    confirmPassword:yup.
                 string().
                 required("Password is mandatory"),
     bio: yup.

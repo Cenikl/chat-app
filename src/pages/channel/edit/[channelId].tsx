@@ -75,7 +75,7 @@ export default function editChannel({users}:any){
     return (
     <>
     <div className={styles.main}>
-        <form >
+        <form name="editChannelForm">
         <Multiselect
             options={users}
             showCheckbox

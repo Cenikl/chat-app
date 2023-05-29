@@ -1,4 +1,4 @@
-import { Profile } from '@/typings/editProfileType';
+import { Profile, ProfileComplete } from '@/typings/editProfileType';
 import { Register } from '@/typings/signupType';
 import { schema } from '@/utils/profileVerify';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -56,12 +56,16 @@ export default function profil({user}:any){
     const {errors} = formState ;
 
     const onSubmit = async (data: Profile) => { 
-        let cpass = document.getElementById("cpassword") as HTMLInputElement;
-        let value = cpass.value;
-        if(value == data.password ){
+        if(data.newPassword == data.confirmPassword ){
+        const sendData : ProfileComplete = {
+            name: data.name,
+            oldPassword: data.currentPassword,
+            password: data.newPassword,
+            bio: data.bio
+        }
         const request = await fetch('http://localhost:8080/user',{
             method: 'PUT',
-            body: JSON.stringify(data),
+            body: JSON.stringify(sendData),
             headers:{
                 'Authorization' : 'Bearer '+cookies.get('jwttoken'),
                 'Content-Type': 'application/json'
@@ -86,7 +90,7 @@ export default function profil({user}:any){
             <div className={styles.profile}> 
             <h1>USER PROFILE</h1>
             <hr />
-            {editProfile == false && <div>
+            <div>
             <h3>Name : </h3>
             {profile.name} <br />
             <h3>Email : </h3>
@@ -97,11 +101,8 @@ export default function profil({user}:any){
             {profile.createdAt} <br />
             <button onClick={()=>{setEditProfile(!editProfile)}}>Edit profil</button>
             </div>
-            }
-
-
-            {editProfile == true && <div>
-                <form onSubmit={handleSubmit(onSubmit)} noValidate>
+            <div>
+                <form name="editProfileForm" onSubmit={handleSubmit(onSubmit)} noValidate>
                 <input 
                     type="text" 
                     id={styles.form} 
@@ -116,28 +117,33 @@ export default function profil({user}:any){
                 <input 
                     type="password"  
                     id={styles.form} 
-                    placeholder='OldPassword'
-                    {...register("oldPassword",{required:{
+                    placeholder=' Current Password'
+                    {...register("currentPassword",{required:{
                         value: true,
                         message: "Wrong old password"
                         }})} /> 
-                <p>{errors.password?.message}</p> <br />
+                <p>{errors.currentPassword?.message}</p> <br />
 
                 <input 
                     type="password"  
                     id={styles.form} 
                     placeholder='New Password'
-                    {...register("password",{required:{
+                    {...register("newPassword",{required:{
                         value: true,
                         message: "Password is mandatory"
                         }})} /> 
-                <p>{errors.password?.message}</p> <br />
+                <p>{errors.newPassword?.message}</p> <br />
 
             <input 
                 type="password" 
                 placeholder='Confirm your password' 
                 className={styles.cpass}
-                id='cpassword' /> <br /> <br />
+                id='cpassword'
+                {...register("confirmPassword",{required:{
+                    value: true,
+                    message: "Password is mandatory"
+                    }})} /> <br /> <br />
+                <p>{errors.confirmPassword?.message}</p> <br />
 
             <input 
                 type="text"
@@ -150,10 +156,10 @@ export default function profil({user}:any){
                     }})} /> <br />
             <p>{errors.bio?.message}</p> <br />
 
-                <button >Register</button>
+                <button >Update Profile</button>
                 </form>
                 <button onClick={()=>{setEditProfile(!editProfile)}}>Cancel Edit profil</button>
-                </div>}
+                </div>
             </div>
 
             <div className={styles.routing}>

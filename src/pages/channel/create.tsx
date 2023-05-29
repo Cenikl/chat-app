@@ -81,7 +81,7 @@ export default function channelCreate({users}:any){
     return (
     <>
     <div className={styles.create}>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form name="createChannelForm" onSubmit={handleSubmit(onSubmit)} noValidate>
             <input 
                 type="text"  
                 id="name" 
@@ -111,6 +111,7 @@ export default function channelCreate({users}:any){
                 displayValue="name"
                 onSelect={(user) =>{onSelect(user)}}
                 onRemove={(user) =>{onRemove(user)}}
+                {...register("members")}
                 />
                 <button >Create</button>
         </form>

@@ -7,9 +7,7 @@ import {handleformLogin} from "../helpers/forms"
 
 export function Login(){
     const form = handleformLogin(schema); 
-    const signUp = () => {redirectTo('/sign-up')}
     const onSubmit = async (data: Login) => {handleLogin(data)}
-
     return (
         <>
         <div className={styles.login}>
@@ -41,7 +39,7 @@ export function Login(){
             </form>
             <button 
                 className={styles.log} 
-                onClick={signUp}>Sign-up</button>
+                onClick={()=>redirectTo('/sign-up')}>Sign-up</button>
         </div>
         </>
     )

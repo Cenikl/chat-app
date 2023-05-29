@@ -3,6 +3,10 @@ import {redirectTo} from "../../helpers/redirect";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
+import { messageContent, Messages } from '@/typings/sendMessage';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { schema } from '@/utils/messageVerify';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const {req} = context;
@@ -42,7 +46,11 @@ export default function messages({messages}:any){
     const cookies = new Cookies();
     const [currentMessages,setCurrentMessages] = useState(messages.sort((a:any,b:any) => a.id - b.id));
     const [shouldFetchData,setShouldFetchData] = useState(true);
-
+    const form = useForm<messageContent>({
+        resolver: yupResolver(schema)
+    });
+    const { register,handleSubmit, formState } = form; 
+    const {errors} = formState ;
 
     const takeMessages = async () =>{
        const request = await fetch('http://localhost:8080/messages/'+router.query.userId,{
@@ -56,16 +64,14 @@ export default function messages({messages}:any){
         setCurrentMessages(data.messages.sort((a:any,b:any) => a.id - b.id))
     }
 
-    const sendMessage = async () => {
-        let inpMess = document.getElementById('messaging') as HTMLInputElement;
-        let value = inpMess.value
-        let sending = {
+    const sendMessage = async (data:messageContent) => {
+        const messaging : Messages = {
             recipientId:router.query.userId,
-            content:value
-        } 
+            content:data.message
+        }
         await fetch('http://localhost:8080/message',{
             method:'POST',
-            body: JSON.stringify(sending),
+            body: JSON.stringify(messaging),
             headers:{
                 'Authorization' : 'Bearer '+cookies.get('jwttoken'),
                 'Content-Type': 'application/json'
@@ -88,15 +94,25 @@ export default function messages({messages}:any){
     {currentMessages.map((message:any) => {
                 return(
                     <div key={message.id}>
+                        <h3>{message.sender.name}</h3>
+                        <h4>{message.createdAt == message.updatedAt ? message.createdAt : message.updatedAt}</h4>
                         <p>{message.content}</p>
                     </div>
                 )
             })}
     <div>
+        <form name="sendMessageForm" onSubmit={handleSubmit(sendMessage)} noValidate>
             <input type="text" 
                 id="messaging" 
-                placeholder="Enter your text here..." />
-            <button onClick={()=>sendMessage()}>Send</button>
+                placeholder="Enter your text here..." 
+                {...register("message",{
+                    required:{
+                        value:true,
+                        message: "Write your message here"
+                }})}/>
+            <p>{errors.message?.message}</p>
+            <button>Send</button>
+            </form>
             </div>
     </div>
     </>

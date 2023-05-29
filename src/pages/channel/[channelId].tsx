@@ -4,6 +4,10 @@ import Cookies from 'universal-cookie';
 import { useRouter } from 'next/router';
 import styles from '../../styles/ChannelId.module.css';
 import { redirectTo } from '@/helpers/redirect';
+import { useForm } from 'react-hook-form';
+import { messageChannel, messageContent } from '@/typings/sendMessage';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { schema } from '@/utils/messageVerify';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const {req} = context;
@@ -40,6 +44,11 @@ export default function messages({messages}:any){
     const shouldFetchData = true;
     const cookies = new Cookies()
     const router = useRouter();
+    const form = useForm<messageContent>({
+        resolver: yupResolver(schema)
+    });
+    const { register,handleSubmit, formState } = form; 
+    const {errors} = formState ;
     const refreshMessages = async () => {
         const request = await fetch('http://localhost:8080/messages/channel/'+router.query.channelId,{
             method: 'GET',
@@ -51,17 +60,14 @@ export default function messages({messages}:any){
         const data = await request.json()
         setOnlineMessages(data.messages.sort((a:any,b:any) => a.id - b.id))
     }
-    const sendMessage = async () => {
-        let inpMess = document.getElementById('messaging') as HTMLInputElement;
-        let value = inpMess.value
-        let sending = {
+    const sendMessage = async (data:messageContent) => {
+        const messaging : messageChannel = {
             channelId:router.query.channelId,
-            recipientId:null,
-            content:value
-        } 
-        const request = await fetch('http://localhost:8080/message',{
+            content:data.message
+        }
+        await fetch('http://localhost:8080/message',{
             method:'POST',
-            body: JSON.stringify(sending),
+            body: JSON.stringify(messaging),
             headers:{
                 'Authorization' : 'Bearer '+cookies.get('jwttoken'),
                 'Content-Type': 'application/json'
@@ -84,15 +90,25 @@ export default function messages({messages}:any){
             {onlineMessages.map((message:any) => {
                 return(
                     <div key={message.id}>
+                        <h3>{message.sender.name}</h3>
+                        <h4>{message.createdAt == message.updatedAt ? message.createdAt : message.updatedAt}</h4>
                         <p>{message.content}</p>
                     </div>
                 )
             })}
             <div>
-            <input type="text" 
-                id="messaging" 
-                placeholder="Enter your text here..." />
-            <button onClick={()=>sendMessage()}>Send</button>
+                <form name="sendMessageForm" onSubmit={handleSubmit(sendMessage)} noValidate>
+                    <input type="text" 
+                        id="messaging" 
+                        placeholder="Enter your text here..." 
+                        {...register("message",{
+                            required:{
+                                value:true,
+                                message: "Write your message here"
+                        }})}/>
+                    <p>{errors.message?.message}</p>
+                    <button>Send</button>
+                </form>
             </div>
         </div>
         <div className={styles.members}>
