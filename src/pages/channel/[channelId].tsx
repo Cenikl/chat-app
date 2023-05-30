@@ -1,6 +1,5 @@
 import {GetServerSideProps} from 'next';
 import { useEffect, useState } from 'react';
-import Cookies from 'universal-cookie';
 import { useRouter } from 'next/router';
 import styles from '../../styles/ChannelId.module.css';
 import { redirectTo } from '@/helpers/redirect';
@@ -8,22 +7,11 @@ import { useForm } from 'react-hook-form';
 import { messageChannel, messageContent } from '@/typings/sendMessage';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { schema } from '@/utils/messageVerify';
+import { checkToken } from '@/helpers/token';
+import { getToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
-    const {req} = context;
-    const cookieHeader = req.headers.cookie;
-    const token = cookieHeader ? cookieHeader?.split('; ')
-        .find((cookie) => cookie.trim().startsWith('jwttoken='))
-        ?.split('=')[1]
-        : null; 
-    if(token == null){
-        return{
-            redirect: {
-                destination: '/login',
-                permanent:false
-            }
-        };
-    }
+    const token = checkToken(context);
     const request = await fetch('http://localhost:8080/messages/channel/'+context.query.channelId,{
             method: 'GET',
             headers:{
@@ -42,7 +30,6 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
 export default function messages({messages}:any){
     const [onlineMessages,setOnlineMessages] = useState(messages.sort((a:any,b:any) => a.id - b.id));
     const shouldFetchData = true;
-    const cookies = new Cookies()
     const router = useRouter();
     const form = useForm<messageContent>({
         resolver: yupResolver(schema)
@@ -53,7 +40,7 @@ export default function messages({messages}:any){
         const request = await fetch('http://localhost:8080/messages/channel/'+router.query.channelId,{
             method: 'GET',
             headers:{
-                'Authorization' : 'Bearer '+cookies.get('jwttoken'),
+                'Authorization' : 'Bearer '+getToken('jwttoken'),
                 'Content-Type': 'application/json'
             }
         })
@@ -69,7 +56,7 @@ export default function messages({messages}:any){
             method:'POST',
             body: JSON.stringify(messaging),
             headers:{
-                'Authorization' : 'Bearer '+cookies.get('jwttoken'),
+                'Authorization' : 'Bearer '+getToken('jwttoken'),
                 'Content-Type': 'application/json'
             }
         })
@@ -113,7 +100,8 @@ export default function messages({messages}:any){
         </div>
         <div className={styles.members}>
             <h2>Members</h2>
-            <button onClick={()=>redirectTo('/channel/edit/'+router.query.channelId)}>Edit channel</button>
+            <button onClick={()=>redirectTo('/channel/edit/'+router.query.channelId)}>Edit channel</button> <br />
+            <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
         </div>
     </div>
     </>

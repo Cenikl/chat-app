@@ -2,36 +2,22 @@ import {GetServerSideProps} from 'next';
 import {redirectTo} from "../../helpers/redirect";
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import Cookies from 'universal-cookie';
 import { messageContent, Messages } from '@/typings/sendMessage';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { schema } from '@/utils/messageVerify';
+import { checkToken } from '@/helpers/token';
+import { getToken } from '@/helpers/cookie';
+import { handleformMessages } from '@/helpers/forms';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const {req} = context;
-    const cookieHeader = req.headers.cookie;
-    const token = cookieHeader ? cookieHeader?.split('; ')
-        .find((cookie) => cookie.trim().startsWith('jwttoken='))
-        ?.split('=')[1]
-        : null; 
-
-    if(token == null){
-        return{
-            redirect: {
-                destination: '/login',
-                permanent:false
-            }
-        };
-    }
-        const request = await fetch('http://localhost:8080/messages/'+context.query.userId,{
+    const token = checkToken(context);
+    const request = await fetch('http://localhost:8080/messages/'+context.query.userId,{
         method: 'GET',
         headers:{
             'Authorization' : 'Bearer ' + token,
             'Content-Type': 'application/json'
             }
         })
-        const data = await request.json()
+    const data = await request.json()
     return {
         props:{
             messages:data.messages,
@@ -43,20 +29,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
 export default function messages({messages}:any){
     const router = useRouter();
-    const cookies = new Cookies();
     const [currentMessages,setCurrentMessages] = useState(messages.sort((a:any,b:any) => a.id - b.id));
     const [shouldFetchData,setShouldFetchData] = useState(true);
-    const form = useForm<messageContent>({
-        resolver: yupResolver(schema)
-    });
-    const { register,handleSubmit, formState } = form; 
-    const {errors} = formState ;
+    const form = handleformMessages(schema)
 
     const takeMessages = async () =>{
        const request = await fetch('http://localhost:8080/messages/'+router.query.userId,{
         method: 'GET',
         headers:{
-            'Authorization' : 'Bearer ' + cookies.get('jwttoken'),
+            'Authorization' : 'Bearer ' + getToken('jwttoken'),
             'Content-Type': 'application/json'
             }
         })
@@ -73,7 +54,7 @@ export default function messages({messages}:any){
             method:'POST',
             body: JSON.stringify(messaging),
             headers:{
-                'Authorization' : 'Bearer '+cookies.get('jwttoken'),
+                'Authorization' : 'Bearer '+getToken('jwttoken'),
                 'Content-Type': 'application/json'
             }
         })
@@ -101,18 +82,19 @@ export default function messages({messages}:any){
                 )
             })}
     <div>
-        <form name="sendMessageForm" onSubmit={handleSubmit(sendMessage)} noValidate>
+        <form name="sendMessageForm" onSubmit={form.handleSubmit(sendMessage)} noValidate>
             <input type="text" 
                 id="messaging" 
                 placeholder="Enter your text here..." 
-                {...register("message",{
+                {...form.register("message",{
                     required:{
                         value:true,
                         message: "Write your message here"
                 }})}/>
-            <p>{errors.message?.message}</p>
+            <p>{form.formState.errors.message?.message}</p>
             <button>Send</button>
-            </form>
+            </form> <br />
+            <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
             </div>
     </div>
     </>

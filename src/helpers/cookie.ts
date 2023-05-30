@@ -9,3 +9,8 @@ export const removeToken = (tokenName:string) => {
     const cookies = new Cookies();
     return cookies.remove(tokenName);
 }
+
+export const getToken = (tokenName:string) => {
+    const cookies = new Cookies();
+    return cookies.get(tokenName)
+}

@@ -4,25 +4,12 @@ import Multiselect from 'multiselect-react-dropdown';
 import styles from '../../../styles/editChannel.module.css'
 import { useRouter } from 'next/router';
 import { editChannel } from '@/typings/editChannel';
-import Cookies from 'universal-cookie';
 import { redirectTo } from '@/helpers/redirect';
+import { checkToken } from '@/helpers/token';
+import { getToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
-    const {req} = context;
-    const cookieHeader = req.headers.cookie;
-    const token = cookieHeader ? cookieHeader?.split('; ')
-        .find((cookie) => cookie.trim().startsWith('jwttoken='))
-        ?.split('=')[1]
-        : null; 
-
-    if(token == null){
-        return{
-            redirect: {
-                destination: '/login',
-                permanent:false
-            }
-        };
-    }
+    const token = checkToken(context);
     const request = await fetch('http://localhost:8080/users',{
         method: 'GET',
         headers:{
@@ -41,7 +28,6 @@ export default function editChannel({users}:any){
     const [memberObjects,setMemberObjects] = useState([]);
     const router = useRouter();
     const idMembers: number[] = [];
-    const cookies = new Cookies();
     const onSelect = (user:any) => {
         setMemberObjects(user)
     }
@@ -60,7 +46,7 @@ export default function editChannel({users}:any){
             method: 'POST',
             body: JSON.stringify(member),
             headers:{
-                'Authorization' : 'Bearer '+cookies.get('jwttoken'),
+                'Authorization' : 'Bearer '+getToken('jwttoken'),
                 'Content-Type': 'application/json'
             }
         })
@@ -85,7 +71,8 @@ export default function editChannel({users}:any){
         />
         </form>
         <button onClick={()=>addMembers()}>Add members</button>
-    </div>
+    </div> <br />
+    <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
     </>
     )
 }

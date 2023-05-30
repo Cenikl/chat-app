@@ -1,6 +1,4 @@
 import Cookies from 'universal-cookie';
-import {useForm} from 'react-hook-form';
-import {yupResolver} from "@hookform/resolvers/yup"
 import {GetServerSideProps} from 'next';
 import {schema} from "../../utils/mainVerify";
 import {Channel}  from "../../typings/channelType";
@@ -8,23 +6,12 @@ import { useState } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
 import styles from '../../styles/CreateChannels.module.css'
 import { redirectTo } from '@/helpers/redirect';
+import { checkToken } from '@/helpers/token';
+import { handleformChannel } from '@/helpers/forms';
+import { getToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
-    const {req} = context;
-    const cookieHeader = req.headers.cookie;
-    const token = cookieHeader ? cookieHeader?.split('; ')
-        .find((cookie) => cookie.trim().startsWith('jwttoken='))
-        ?.split('=')[1]
-        : null; 
-
-    if(token == null){
-        return{
-            redirect: {
-                destination: '/login',
-                permanent:false
-            }
-        };
-    }
+    const token = checkToken(context);
     const request = await fetch('http://localhost:8080/users',{
         method: 'GET',
         headers:{
@@ -40,12 +27,7 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
 }
 
 export default function channelCreate({users}:any){
-    const form = useForm<Channel>({
-        resolver:yupResolver(schema)
-    })
-    const { register, handleSubmit, formState } = form; 
-    const cookies = new Cookies();
-    const {errors} = formState ;
+    const form = handleformChannel(schema)
     const [memberObjects,setMemberObjects] = useState([])
     const idMembers: number[] = []
 
@@ -65,7 +47,7 @@ export default function channelCreate({users}:any){
             method: 'POST',
             body: JSON.stringify(data),
             headers:{
-                'Authorization' : 'Bearer '+cookies.get('jwttoken'),
+                'Authorization' : 'Bearer '+getToken('jwttoken'),
                 'Content-Type': 'application/json'
             }
         })
@@ -81,29 +63,29 @@ export default function channelCreate({users}:any){
     return (
     <>
     <div className={styles.create}>
-        <form name="createChannelForm" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form name="createChannelForm" onSubmit={form.handleSubmit(onSubmit)} noValidate>
             <input 
                 type="text"  
                 id="name" 
                 placeholder='Name'
-                {...register("name",
+                {...form.register("name",
                 {required:{
                     value: true,
                     message: "Put the name of the channel"
                 }})}/> 
-            <p>{errors.name?.message}</p>
+            <p>{form.formState.errors.name?.message}</p>
             <br />
             <select 
                 id="type" 
                 placeholder='Type of the channel'
-                {...register("type",{required:{
+                {...form.register("type",{required:{
                     value: true,
                     message: "Type is mandatory"
                 }})} > 
                 <option value="public">public</option>
                 <option value="private">private</option>
                 </select>
-                <p>{errors.type?.message}</p>    
+                <p>{form.formState.errors.type?.message}</p>    
                 <br />
                 <Multiselect
                 options={users}
@@ -111,10 +93,11 @@ export default function channelCreate({users}:any){
                 displayValue="name"
                 onSelect={(user) =>{onSelect(user)}}
                 onRemove={(user) =>{onRemove(user)}}
-                {...register("members")}
+                {...form.register("members")}
                 />
                 <button >Create</button>
-        </form>
+        </form> <br />
+        <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
     </div>
     </>
     )

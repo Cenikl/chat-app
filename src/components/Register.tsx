@@ -1,7 +1,7 @@
 import styles from '../styles/Register.module.css'
 import {Register}  from "../typings/signupType"
 import {schema}  from "../utils/signupVerify"
-import {handleformRegister } from '@/helpers/forms';
+import {handleformRegister} from '@/helpers/forms';
 import {handleRegister} from '@/components/handleRegister';
 
 export default function Register(){
