@@ -63,7 +63,7 @@ export default function messages({messages}:any){
 
    useEffect(()=>{
         if(shouldFetchData){
-            const timer = setInterval(()=>{takeMessages()},1000)
+            const timer = setInterval(()=>{takeMessages()},5000)
             return () => {
                 clearTimeout(timer)
             }

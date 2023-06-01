@@ -1,7 +1,5 @@
-import {postRequest, sendwithBodyRequest} from "../helpers/requests";
-import {redirectTo} from "../helpers/redirect";
-import {getToken, setToken} from "../helpers/cookie"
-import { registerComplete } from "@/typings/signupType";
+import {sendwithBodyRequest} from "../helpers/requests";
+import {getToken} from "../helpers/cookie"
 import { ProfileComplete } from "@/typings/editProfileType";
 
 export const handleProfile = async (data:any) => {
