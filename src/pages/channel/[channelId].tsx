@@ -64,7 +64,7 @@ export default function messages({messages}:any){
     }
     useEffect(()=>{
         if(shouldFetchData){
-            const timer = setInterval(()=>{refreshMessages()},1000)
+            const timer = setInterval(()=>{refreshMessages()},5000)
             return () => {
                 clearTimeout(timer)
             }

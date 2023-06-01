@@ -1,4 +1,3 @@
-import Cookies from 'universal-cookie';
 import {GetServerSideProps} from 'next';
 import {schema} from "../../utils/mainVerify";
 import {Channel}  from "../../typings/channelType";
