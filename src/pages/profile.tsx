@@ -1,4 +1,4 @@
-import { Profile } from '@/typings/editProfileType';
+import { Profile, ProfileComplete } from '@/typings/editProfileType';
 import { schema } from '@/utils/profileVerify';
 import {GetServerSideProps} from 'next';
 import { useState } from 'react';
@@ -7,6 +7,7 @@ import styles from '../styles/Profile.module.css'
 import { checkToken } from '@/helpers/token';
 import { handleformProfile } from '@/helpers/forms';
 import { handleProfile } from '@/components/handleUpdateProfil';
+import { getToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const token = checkToken(context)
@@ -32,7 +33,21 @@ export default function Profil({user}:any){
 
     const onSubmit = async (data: Profile) => { 
         if(data.newPassword == data.confirmPassword ){
-            const response = await handleProfile(data);
+            const sendData : ProfileComplete = {
+                name: data.name,
+                oldPassword: data.currentPassword,
+                password: data.newPassword,
+                bio: data.bio
+            } 
+            const request = await fetch('http://localhost:8080/user',{
+                method: 'PUT',
+                body: JSON.stringify(sendData),
+                headers:{
+                    'Authorization' : 'Bearer '+getToken('jwttoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            const response = await request.json();
             setProfile(response.user)
             setEditProfile(!editProfile)
         if(response.status == false){
