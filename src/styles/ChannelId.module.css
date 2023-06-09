@@ -13,3 +13,13 @@
 .members{
     flex-basis: 23%;
 }
+.container{
+    display: flex;
+}
+
+.container h3{
+    margin: 0;
+}
+.container h4 {
+    margin: 0 auto;
+}

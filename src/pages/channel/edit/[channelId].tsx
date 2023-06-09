@@ -61,6 +61,7 @@ export default function editChannel({users}:any){
     return (
     <>
     <div className={styles.main}>
+    <div>
         <form name="editChannelForm">
         <Multiselect
             options={users}
@@ -72,8 +73,11 @@ export default function editChannel({users}:any){
         </form>
         <button onClick={()=>addMembers()}>Add members</button>
     </div> <br />
+    <div>
     <button onClick={()=>redirectTo('/profile')}>Return to main page</button> <br />
     <button onClick={()=>{removeToken("jwttoken");redirectTo("/login")}}>Logout</button>
+    </div>
+    </div>
     </>
     )
 }

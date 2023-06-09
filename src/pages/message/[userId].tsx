@@ -7,6 +7,8 @@ import { schema } from '@/utils/messageVerify';
 import { checkToken } from '@/helpers/token';
 import { getToken, removeToken } from '@/helpers/cookie';
 import { handleformMessages } from '@/helpers/forms';
+import { parseDate } from '@/helpers/parseDate';
+import styles from '../../styles/Message.module.css'
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     const token = checkToken(context);
@@ -59,6 +61,8 @@ export default function messages({messages}:any){
             }
         })
         takeMessages()
+        const form = document.forms.namedItem("sendMessageForm") as HTMLFormElement;
+        form.reset();
     }
 
    useEffect(()=>{
@@ -75,10 +79,13 @@ export default function messages({messages}:any){
     {currentMessages.map((message:any) => {
                 return(
                     <div key={message.id}>
-                        <h3>{message.sender.name}</h3>
-                        <h4>{message.createdAt == message.updatedAt ? message.createdAt : message.updatedAt}</h4>
+                        <div className={styles.container}>
+                        <h3>{message.sender.name} </h3>
+                        <h4>{message.createdAt == message.updatedAt ? parseDate(message.createdAt) : parseDate(message.updatedAt)}</h4>                     
+                        </div>
                         <p>{message.content}</p>
                     </div>
+                    
                 )
             })}
     <div>
@@ -86,7 +93,7 @@ export default function messages({messages}:any){
             <textarea
                 id="messaging" 
                 placeholder="Enter your text here..."
-                rows={4}
+                rows={3}
                 cols={50} 
                 {...form.register("message",{
                     required:{

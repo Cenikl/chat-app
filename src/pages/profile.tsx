@@ -27,17 +27,16 @@ export const getServerSideProps: GetServerSideProps = async (context) =>{
 }
 
 export default function Profil({user}:any){
-    const [editProfile,setEditProfile] = useState(false)
     const [profile,setProfile] = useState(user)
     const form = handleformProfile(schema)
-
     const onSubmit = async (data: Profile) => { 
         if(data.newPassword == data.confirmPassword ){
             const sendData : ProfileComplete = {
                 name: data.name,
                 oldPassword: data.currentPassword,
                 password: data.newPassword,
-                bio: data.bio
+                bio: data.bio,
+                email:data.email
             } 
             const request = await fetch('http://localhost:8080/user',{
                 method: 'PUT',
@@ -48,8 +47,9 @@ export default function Profil({user}:any){
                 }
             })
             const response = await request.json();
-            setProfile(response.user)
-            setEditProfile(!editProfile)
+            const form = document.forms.namedItem("editProfileForm") as HTMLFormElement;
+            form.reset();
+            setProfile(response.user);
         if(response.status == false){
             alert(response.message)
         }
@@ -73,20 +73,29 @@ export default function Profil({user}:any){
             {profile.bio} <br />
             <h3>Joigned at : </h3>
             {profile.createdAt} <br />
-            <button onClick={()=>{setEditProfile(!editProfile)}}>Edit profil</button>
             </div>
             <div>
                 <form name="editProfileForm" onSubmit={form.handleSubmit(onSubmit)} noValidate>
                 <input 
                     type="text" 
                     id={styles.form} 
-                    placeholder='Name'
+                    placeholder={profile.name}
                     {...form.register("name",{
                         required:{
                             value:true,
                             message: "Name is mandatory"
                         }})}/> <br />
-                <p>{form.formState.errors.name?.message}</p> <br />    
+                <p>{form.formState.errors.name?.message}</p> <br />   
+
+                <input 
+                    type="email"  
+                    placeholder='Email' 
+                    {...form.register("email",
+                    {required:{
+                        value: true,
+                        message: "Email is mandatory"
+                    }})}/> 
+                <p>{form.formState.errors.email?.message}</p> <br /> 
 
                 <input 
                     type="password"  
@@ -122,7 +131,7 @@ export default function Profil({user}:any){
             <input 
                 type="text"
                 id={styles.form}
-                placeholder='Bio'
+                placeholder={profile.bio}
                 {...form.register("bio",{
                     required:{
                         value:true,
@@ -132,7 +141,6 @@ export default function Profil({user}:any){
 
                 <button className="updateProfileButton" >Update Profile</button>
                 </form>
-                <button onClick={()=>{setEditProfile(!editProfile)}}>Cancel Edit profil</button>
                 </div>
             </div>
 

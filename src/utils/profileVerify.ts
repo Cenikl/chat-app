@@ -15,5 +15,9 @@ export const schema = yup.object({
                 required("Password is mandatory"),
     bio: yup.
             string().
-            required("Bio is maybe mandatory")
+            required("Bio is maybe mandatory"),
+    email: yup.
+            string().
+            email("Incorrect Format").
+            required("Email is mandatory"),
 })
