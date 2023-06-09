@@ -1,4 +1,4 @@
-.login{
+.loginButtonin{
     margin-left: 50%;
     margin-right: 50%;
     margin-top: 25%;
@@ -34,7 +34,7 @@
     outline: none;
     border-color: rgb(78, 230, 78);
 }
-.log{
+.loginButton{
     margin-top: 5%;
     width: 45%;
     padding: 15px;
@@ -45,12 +45,12 @@
     border: 1px solid rgba(80, 80, 80, 0.574);
     margin-bottom: 7px;
 }
-.log:hover{
+.loginButton:hover{
     border-color: rgb(192, 57, 43);
     color: white;
     background-color: rgb(192, 57, 43);
 }
-.log:focus{
+.loginButton:focus{
     border-color: rgb(192, 57, 43);
     color: rgb(192, 57, 43);
     background-color: white;

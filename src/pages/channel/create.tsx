@@ -1,13 +1,13 @@
 import {GetServerSideProps} from 'next';
 import {schema} from "../../utils/mainVerify";
-import {Channel}  from "../../typings/channelType";
+import {Channel, trueChannel}  from "../../typings/channelType";
 import { useState } from 'react';
 import Multiselect from 'multiselect-react-dropdown';
 import styles from '../../styles/CreateChannels.module.css'
 import { redirectTo } from '@/helpers/redirect';
 import { checkToken } from '@/helpers/token';
 import { handleformChannel } from '@/helpers/forms';
-import { getToken } from '@/helpers/cookie';
+import { getToken, removeToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const token = checkToken(context);
@@ -40,11 +40,15 @@ export default function channelCreate({users}:any){
     const onSubmit = async (data:Channel) =>{
         for(let i =0; i < memberObjects.length;i++){
             idMembers.push(Number((memberObjects[i] as {id: string}).id))
+        } 
+        const trueChannel : trueChannel = {
+            name:data.channelName,
+            type:data.type,
+            members: idMembers
         }
-        data.members = idMembers
         const request = await fetch('http://localhost:8080/channel',{
             method: 'POST',
-            body: JSON.stringify(data),
+            body: JSON.stringify(trueChannel),
             headers:{
                 'Authorization' : 'Bearer '+getToken('jwttoken'),
                 'Content-Type': 'application/json'
@@ -67,12 +71,12 @@ export default function channelCreate({users}:any){
                 type="text"  
                 id="name" 
                 placeholder='Name'
-                {...form.register("name",
+                {...form.register("channelName",
                 {required:{
                     value: true,
                     message: "Put the name of the channel"
                 }})}/> 
-            <p>{form.formState.errors.name?.message}</p>
+            <p>{form.formState.errors.channelName?.message}</p>
             <br />
             <select 
                 id="type" 
@@ -94,9 +98,10 @@ export default function channelCreate({users}:any){
                 onRemove={(user) =>{onRemove(user)}}
                 {...form.register("members")}
                 />
-                <button >Create</button>
+                <button className="createChannelButton" >Create Channel</button>
         </form> <br />
-        <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
+        <button onClick={()=>redirectTo('/profile')}>Return to main page</button> <br />
+        <button onClick={()=>{removeToken("jwttoken");redirectTo("/login")}}>Logout</button>
     </div>
     </>
     )

@@ -6,7 +6,7 @@ import { useRouter } from 'next/router';
 import { editChannel } from '@/typings/editChannel';
 import { redirectTo } from '@/helpers/redirect';
 import { checkToken } from '@/helpers/token';
-import { getToken } from '@/helpers/cookie';
+import { getToken, removeToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const token = checkToken(context);
@@ -72,7 +72,8 @@ export default function editChannel({users}:any){
         </form>
         <button onClick={()=>addMembers()}>Add members</button>
     </div> <br />
-    <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
+    <button onClick={()=>redirectTo('/profile')}>Return to main page</button> <br />
+    <button onClick={()=>{removeToken("jwttoken");redirectTo("/login")}}>Logout</button>
     </>
     )
 }

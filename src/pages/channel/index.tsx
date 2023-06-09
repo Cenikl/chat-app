@@ -3,6 +3,7 @@ import {GetServerSideProps} from 'next';
 import { redirectTo } from '@/helpers/redirect';
 import { useState } from 'react';
 import { checkToken } from '@/helpers/token';
+import { removeToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const token = checkToken(context)
@@ -40,7 +41,8 @@ export default function messagesList({channels}:any){
                 )
             })}
             <button onClick={()=>redirectTo('/channel/create')}>Create a channel</button> <br />
-            <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
+            <button onClick={()=>redirectTo('/profile')}>Return to main page</button> <br />
+            <button onClick={()=>{removeToken("jwttoken");redirectTo("/login")}}>Logout</button>
         </div>
         </>
     )

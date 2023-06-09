@@ -55,7 +55,7 @@ export default function Register(){
                 }})} /> <br />
             <p>{form.formState.errors.confirmPassword?.message}</p> <br />
 
-                <button className={styles.log}>Register</button>
+                <button className={styles.registerButton}>Register</button>
             </form>
         </div>
         </>

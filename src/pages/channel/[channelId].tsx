@@ -8,7 +8,7 @@ import { messageChannel, messageContent } from '@/typings/sendMessage';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { schema } from '@/utils/messageVerify';
 import { checkToken } from '@/helpers/token';
-import { getToken } from '@/helpers/cookie';
+import { getToken, removeToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const token = checkToken(context);
@@ -85,23 +85,26 @@ export default function messages({messages}:any){
             })}
             <div>
                 <form name="sendMessageForm" onSubmit={handleSubmit(sendMessage)} noValidate>
-                    <input type="text" 
+                    <textarea 
                         id="messaging" 
                         placeholder="Enter your text here..." 
+                        rows={4}
+                        cols={50}
                         {...register("message",{
                             required:{
                                 value:true,
                                 message: "Write your message here"
                         }})}/>
                     <p>{errors.message?.message}</p>
-                    <button>Send</button>
+                    <button className="sendMessageButton">Send Message</button>
                 </form>
             </div>
         </div>
         <div className={styles.members}>
             <h2>Members</h2>
             <button onClick={()=>redirectTo('/channel/edit/'+router.query.channelId)}>Edit channel</button> <br />
-            <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
+            <button onClick={()=>redirectTo('/profile')}>Return to main page</button> <br />
+            <button onClick={()=>{removeToken("jwttoken");redirectTo("/login")}}>Logout</button>
         </div>
     </div>
     </>

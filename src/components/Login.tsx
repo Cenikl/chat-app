@@ -35,7 +35,7 @@ export function Login(){
                     }})} /> 
                 <p>{form.formState.errors.password?.message}</p>    
                     <br />
-                <button className={styles.log}>Login</button>
+                <button className={styles.loginButton}>Login</button>
             </form>
             <button 
                 className={styles.log} 

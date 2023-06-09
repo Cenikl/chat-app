@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { messageContent, Messages } from '@/typings/sendMessage';
 import { schema } from '@/utils/messageVerify';
 import { checkToken } from '@/helpers/token';
-import { getToken } from '@/helpers/cookie';
+import { getToken, removeToken } from '@/helpers/cookie';
 import { handleformMessages } from '@/helpers/forms';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -83,18 +83,21 @@ export default function messages({messages}:any){
             })}
     <div>
         <form name="sendMessageForm" onSubmit={form.handleSubmit(sendMessage)} noValidate>
-            <input type="text" 
+            <textarea
                 id="messaging" 
-                placeholder="Enter your text here..." 
+                placeholder="Enter your text here..."
+                rows={4}
+                cols={50} 
                 {...form.register("message",{
                     required:{
                         value:true,
                         message: "Write your message here"
                 }})}/>
             <p>{form.formState.errors.message?.message}</p>
-            <button>Send</button>
+            <button className="sendMessageButton">Send Message</button>
             </form> <br />
-            <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
+            <button onClick={()=>redirectTo('/profile')}>Return to main page</button> <br />
+            <button onClick={()=>{removeToken("jwttoken");redirectTo("/login")}}>Logout</button>
             </div>
     </div>
     </>

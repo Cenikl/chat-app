@@ -7,7 +7,7 @@ import styles from '../styles/Profile.module.css'
 import { checkToken } from '@/helpers/token';
 import { handleformProfile } from '@/helpers/forms';
 import { handleProfile } from '@/components/handleUpdateProfil';
-import { getToken } from '@/helpers/cookie';
+import { getToken, removeToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const token = checkToken(context)
@@ -130,7 +130,7 @@ export default function Profil({user}:any){
                     }})} /> <br />
             <p>{form.formState.errors.bio?.message}</p> <br />
 
-                <button >Update Profile</button>
+                <button className="updateProfileButton" >Update Profile</button>
                 </form>
                 <button onClick={()=>{setEditProfile(!editProfile)}}>Cancel Edit profil</button>
                 </div>
@@ -139,7 +139,8 @@ export default function Profil({user}:any){
             <div className={styles.routing}>
                 <button onClick={()=>redirectTo("/channel")}>Channels</button> <br />
                 <button onClick={()=>redirectTo("/message")}>Messages</button> <br />
-                <button onClick={()=>redirectTo("/channel/create")}>Create Channel</button>
+                <button onClick={()=>redirectTo("/channel/create")}>Create Channel</button> <br />
+                <button onClick={()=>{removeToken("jwttoken");redirectTo("/login")}}>Logout</button>
             </div>
 
         </div>

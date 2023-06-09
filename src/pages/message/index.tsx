@@ -3,6 +3,7 @@ import {GetServerSideProps} from 'next';
 import { redirectTo } from '@/helpers/redirect';
 import { useState } from 'react';
 import { checkToken } from '@/helpers/token';
+import { removeToken } from '@/helpers/cookie';
 
 export const getServerSideProps: GetServerSideProps = async (context) =>{
     const token = checkToken(context);
@@ -38,7 +39,8 @@ export default function messagesList({users}:any){
                     </div>
                 )
             })} <br />
-            <button onClick={()=>redirectTo('/profile')}>Return to main page</button>
+            <button onClick={()=>redirectTo('/profile')}>Return to main page</button> <br />
+            <button onClick={()=>{removeToken("jwttoken");redirectTo("/login")}}>Logout</button>
         </div>
         </>
     )
